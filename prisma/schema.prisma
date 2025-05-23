@@ -14,37 +14,23 @@ datasource db {
 }
 
 model Region {
-  id        String     @id @default(uuid())
-  name_uz   String     @unique
-  name_ru   String?    @unique
-  name_en   String?    @unique
-  User      User[]
-  District  District[]
-  createdAt DateTime   @default(now())
-}
-
-model District {
   id        String   @id @default(uuid())
   name_uz   String   @unique
   name_ru   String?  @unique
   name_en   String?  @unique
-  Region    Region   @relation(fields: [regionId], references: [id])
-  regionId  String
   User      User[]
   createdAt DateTime @default(now())
 }
 
 model User {
-  id         String    @id @default(uuid())
+  id         String       @id @default(uuid())
   fullname   String
-  phone      String    @unique
-  email      String    @unique
+  phone      String       @unique
+  email      String       @unique
   password   String
-  Region     Region    @relation(fields: [regionId], references: [id])
+  Region     Region       @relation(fields: [regionId], references: [id])
   regionId   String
-  District   District? @relation(fields: [districtId], references: [id])
-  districtId String?
-  role       UserRole  @default(USER_FIZ)
+  role       UserRole     @default(USER_FIZ)
   inn        String?
   mfo        String?
   bank       String?
@@ -52,9 +38,12 @@ model User {
   oked       String?
   address    String?
   Session    Session[]
-  createdAt  DateTime  @default(now())
+  createdAt  DateTime     @default(now())
   Order      Order[]
   Backet     Backet[]
+  Star       Star[]
+  Comment    Comment[]
+  BacketItem BacketItem[]
 }
 
 enum UserRole {
@@ -79,29 +68,35 @@ model Master {
   id            String  @id @default(uuid())
   fullName      String  @unique
   phone         String  @unique
-  isActive      Boolean
+  isActive      Boolean @default(true)
   year          Int
   image         String
   passportImage String
   about         String
 
-  Star        Star[]
-  createdAt   DateTime      @default(now())
-  MasterOrder MasterOrder[]
+  Star          Star[]
+  createdAt     DateTime        @default(now())
+  MasterOrder   MasterOrder[]
+  ProductMaster ProductMaster[]
 }
 
+//
 model Star {
   id        String   @id @default(uuid())
   Master    Master   @relation(fields: [masterId], references: [id])
   masterId  String
+  User      User     @relation(fields: [userId], references: [id])
   star      Float
   createdAt DateTime @default(now())
+  userId    String
 }
 
 model Comment {
   id        String   @id @default(uuid())
   Order     Order    @relation(fields: [orderId], references: [id])
   orderId   String
+  User      User     @relation(fields: [userId], references: [id])
+  userId    String
   message   String
   createdAt DateTime @default(now())
 }
@@ -146,6 +141,7 @@ model Showcase {
 }
 
 model Partners {
+  id        String   @id @default(uuid())
   name_uz   String   @unique
   name_ru   String?  @unique
   name_en   String?  @unique
@@ -155,13 +151,16 @@ model Partners {
 }
 
 model Level {
-  id           String         @id @default(uuid())
-  name_uz      String         @unique
-  name_ru      String?        @unique
-  name_en      String?        @unique
-  ProductLevel ProductLevel[]
-  createdAt    DateTime       @default(now())
-  ProductOrder ProductOrder[]
+  id      String  @id @default(uuid())
+  name_uz String  @unique
+  name_ru String? @unique
+  name_en String? @unique
+
+  ProductLevel  ProductLevel[]
+  ProductOrder  ProductOrder[]
+  ProductMaster ProductMaster[]
+  createdAt     DateTime        @default(now())
+  BacketItem    BacketItem[]
 }
 
 model Capasity {
@@ -184,28 +183,28 @@ model Brand {
 
 //
 model Tool {
-  id                String              @id @default(uuid())
-  name_uz           String
-  name_ru           String?
-  name_en           String?
-  description_uz    String
-  description_ru    String?
-  description_en    String?
-  price             Int
-  quantity          Int
-  code              String
-  Brand             Brand               @relation(fields: [brandId], references: [id])
-  brandId           String
-  isActive          Boolean
-  Capacity          Capasity?           @relation(fields: [capasityId], references: [id])
-  capasityId        String?
-  image             String
-  Size              Size                @relation(fields: [sizeId], references: [id])
-  sizeId            String
-  ProductTool       ProductTool[]
-  createdAt         DateTime            @default(now())
-  ProductMasterTool ProductMasterTool[]
-  ToolOrder         ToolOrder[]
+  id             String        @id @default(uuid())
+  name_uz        String
+  name_ru        String?
+  name_en        String?
+  description_uz String
+  description_ru String?
+  description_en String?
+  price          Int
+  quantity       Int
+  code           String
+  Brand          Brand         @relation(fields: [brandId], references: [id])
+  brandId        String
+  isActive       Boolean       @default(true)
+  Capacity       Capasity?     @relation(fields: [capasityId], references: [id])
+  capasityId     String?
+  image          String
+  Size           Size?         @relation(fields: [sizeId], references: [id])
+  sizeId         String?
+  ProductTool    ProductTool[]
+  createdAt      DateTime      @default(now())
+  ToolOrder      ToolOrder[]
+  BacketItem     BacketItem[]
 }
 
 model Product {
@@ -213,27 +212,32 @@ model Product {
   name_uz         String         @unique
   name_ru         String?        @unique
   name_en         String?        @unique
-  isActive        Boolean
+  isActive        Boolean        @default(true)
   image           String
   minWorkingHours Int
   ProductLevel    ProductLevel[]
-  priceHourly     Int
-  priceDaily      Int
 
   ProductTool      ProductTool[]
   createdAt        DateTime           @default(now())
   ProductMaster    ProductMaster[]
   ProductOrder     ProductOrder[]
   ProductOrderTool ProductOrderTool[]
+  BacketItem       BacketItem[]
 }
 
+// priceHourly     Int
+// priceDaily      Int
+
 model ProductLevel {
-  id        String   @id @default(uuid())
-  Product   Product  @relation(fields: [productId], references: [id])
-  productId String
-  Level     Level    @relation(fields: [levelId], references: [id])
-  levelId   String
-  createdAt DateTime @default(now())
+  id              String   @id @default(uuid())
+  Product         Product  @relation(fields: [productId], references: [id])
+  productId       String
+  Level           Level    @relation(fields: [levelId], references: [id])
+  levelId         String
+  priceHourly     Int
+  priceDaily      Int
+  minWorkingHours Int
+  createdAt       DateTime @default(now())
 }
 
 model ProductTool {
@@ -255,23 +259,17 @@ model Size {
 }
 
 model ProductMaster {
-  id                String              @id @default(uuid())
-  Product           Product             @relation(fields: [productId], references: [id])
-  productId         String
-  minWorkingHours   Int
-  level             String
-  priceHourly       Int
-  priceDaily        Int
-  experience        Int
-  ProductMasterTool ProductMasterTool[]
-}
-
-model ProductMasterTool {
-  id              String        @id @default(uuid())
-  Tool            Tool          @relation(fields: [toolId], references: [id])
-  toolId          String
-  ProductMaster   ProductMaster @relation(fields: [productMasterId], references: [id])
-  productMasterId String
+  id              String  @id @default(uuid())
+  Product         Product @relation(fields: [productId], references: [id])
+  productId       String
+  Master          Master  @relation(fields: [masterId], references: [id])
+  masterId        String
+  minWorkingHours Int
+  level           Level   @relation(fields: [levelId], references: [id])
+  levelId         String
+  priceHourly     Int
+  priceDaily      Int
+  experience      Int
 }
 
 model Order {
@@ -279,13 +277,12 @@ model Order {
   ToolOrder         ToolOrder[]
   ProductOrder      ProductOrder[]
   total             Int
-  locationLat       String
-  locationLong      String
+  location          Json
   address           String
   date              DateTime       @default(now())
   paymentType       PaymentType
-  withDelivery      WithDelivery
-  status            OrderStatus
+  withDelivery      Boolean        @default(true)
+  status            OrderStatus    @default(PANDING)
   commentToDelivery String?
   cardNumber        String?
   cardDate          String?
@@ -293,6 +290,7 @@ model Order {
   Comment           Comment[]
   User              User           @relation(fields: [userId], references: [id])
   userId            String
+  Backet            Backet[]
 }
 
 enum PaymentType {
@@ -300,16 +298,11 @@ enum PaymentType {
   CASH
 }
 
-enum WithDelivery {
-  YES
-  NO
-}
-
 enum OrderStatus {
   PANDING
   VOID
   PAID
-  DONE
+  FINISHED
 }
 
 model ProductOrder {
@@ -319,6 +312,7 @@ model ProductOrder {
   Order            Order              @relation(fields: [orderId], references: [id])
   orderId          String
   count            Int
+  total            Int
   level            Level              @relation(fields: [levelId], references: [id])
   levelId          String
   quantity         Int
@@ -345,6 +339,7 @@ model ToolOrder {
   toolId  String
   Order   Order  @relation(fields: [orderId], references: [id])
   orderId String
+  total   Int
   count   Int
 }
 
@@ -357,8 +352,23 @@ model MasterOrder {
 }
 
 model Backet {
-  id     String @id @default(uuid())
-  User   User   @relation(fields: [userId], references: [id])
-  userId String
-  
+  id      String @id @default(uuid())
+  User    User   @relation(fields: [userId], references: [id])
+  userId  String
+  Order   Order  @relation(fields: [orderId], references: [id])
+  orderId String
+}
+
+model BacketItem {
+  id        String   @id @default(uuid())
+  Product   Product? @relation(fields: [productId], references: [id])
+  productId String?
+  Level     Level?   @relation(fields: [levelId], references: [id])
+  levelId   String?
+  Tool      Tool?    @relation(fields: [toolId], references: [id])
+  toolId    String?
+  quantity  Int
+  total     Int
+  User      User     @relation(fields: [userId], references: [id])
+  userId    String
 }
