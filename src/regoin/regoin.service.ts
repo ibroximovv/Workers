@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, InternalServerErrorException } from '@
 import { CreateRegoinDto } from './dto/create-regoin.dto';
 import { UpdateRegoinDto } from './dto/update-regoin.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { GetRegionDto } from './dto/get-region.dto';
 
 @Injectable()
 export class RegoinService {
@@ -25,9 +26,40 @@ export class RegoinService {
     }
   }
 
-  async findAll() {
+  async findAll(query: GetRegionDto) {
+    const { search, skip = 1, take = 10, sortBy = 'name_uz', sortOrder } = query
     try {
-      return await this.prisma.region.findMany();
+      return await this.prisma.region.findMany({
+        where: {
+          ...(search && {
+            OR: [
+              { 
+                name_en: {
+                  contains: search,
+                  mode: 'insensitive'
+                }
+              },
+              {
+                name_ru: {
+                  contains: search,
+                  mode: 'insensitive'
+                }
+              },
+              {
+                name_en: {
+                  contains: search,
+                  mode: 'insensitive'
+                }
+              }
+            ]
+          })
+        },
+        skip: ( Number(skip) - 1 ) * Number(take),
+        take: Number(take),
+        orderBy: {
+          [sortBy]: sortOrder
+        }
+      });
     } catch (error) {
       if (error instanceof BadRequestException) throw error
       throw new InternalServerErrorException(error.message || 'Internal server error')

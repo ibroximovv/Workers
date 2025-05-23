@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { RegoinService } from './regoin.service';
 import { CreateRegoinDto } from './dto/create-regoin.dto';
 import { UpdateRegoinDto } from './dto/update-regoin.dto';
+import { GetRegionDto } from './dto/get-region.dto';
 
 @Controller('region')
 export class RegoinController {
@@ -13,8 +14,8 @@ export class RegoinController {
   }
 
   @Get()
-  findAll() {
-    return this.regoinService.findAll();
+  findAll(@Query() query: GetRegionDto) {
+    return this.regoinService.findAll(query);
   }
 
   @Get(':id')

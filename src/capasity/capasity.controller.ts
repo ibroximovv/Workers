@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { CapasityService } from './capasity.service';
 import { CreateCapasityDto } from './dto/create-capasity.dto';
 import { UpdateCapasityDto } from './dto/update-capasity.dto';
+import { GetCapasityDto } from './dto/get-capasity.dto';
 
 @Controller('capasity')
 export class CapasityController {
@@ -13,8 +14,8 @@ export class CapasityController {
   }
 
   @Get()
-  findAll() {
-    return this.capasityService.findAll();
+  findAll(@Query() query: GetCapasityDto) {
+    return this.capasityService.findAll(query);
   }
 
   @Get(':id')

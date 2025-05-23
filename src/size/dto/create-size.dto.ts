@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsOptional, IsString } from "class-validator";
+import { IsOptional, IsString, Matches } from "class-validator";
 
 export class CreateSizeDto {
     @ApiProperty({ example: '100sm' })
@@ -8,6 +8,7 @@ export class CreateSizeDto {
 
     @ApiProperty({ example: '100cm' })
     @IsOptional()
+    @Matches(/^[\u0400-\u04FF\s]+$/)
     @IsString()
     name_ru?: string
 

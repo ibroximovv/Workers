@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsOptional, IsString } from "class-validator";
+import { IsOptional, IsString, Matches } from "class-validator";
 
 export class CreateBrandDto {
     @ApiProperty({ example: 'nike' })
@@ -7,6 +7,7 @@ export class CreateBrandDto {
     name_uz: string
 
     @ApiProperty({ example: 'nike' })
+    @Matches(/^[\u0400-\u04FF\s]+$/)
     @IsOptional()
     @IsString()
     name_ru?: string

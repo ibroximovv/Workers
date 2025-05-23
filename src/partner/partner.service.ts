@@ -2,6 +2,7 @@ import { BadRequestException, ConflictException, Injectable, InternalServerError
 import { CreatePartnerDto } from './dto/create-partner.dto';
 import { UpdatePartnerDto } from './dto/update-partner.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { GetPartnerDto } from './dto/get-partner.dto';
 
 @Injectable()
 export class PartnerService {
@@ -25,9 +26,40 @@ export class PartnerService {
     }
   }
 
-  async findAll() {
+  async findAll(query: GetPartnerDto) {
+    const { search, skip = 1, take = 10, sortBy = 'name_uz', sortOrder } = query
     try {
-      return await this.prisma.partners.findMany()
+      return await this.prisma.partners.findMany({
+        where: {
+          ...(search && {
+            OR: [
+              { 
+                name_en: {
+                  contains: search,
+                  mode: 'insensitive'
+                }
+              },
+              {
+                name_ru: {
+                  contains: search,
+                  mode: 'insensitive'
+                }
+              },
+              {
+                name_en: {
+                  contains: search,
+                  mode: 'insensitive'
+                }
+              }
+            ]
+          })
+        },
+        skip: ( Number(skip) - 1 ) * Number(take),
+        take: Number(take),
+        orderBy: {
+          [sortBy]: sortOrder
+        }
+      })
     } catch (error) {
       if (error instanceof BadRequestException) throw error
       throw new InternalServerErrorException(error.message || InternalServerErrorException)

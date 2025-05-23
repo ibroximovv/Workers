@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsOptional, IsString } from "class-validator";
+import { IsOptional, IsString, Matches } from "class-validator";
 
 export class CreateRegoinDto {
     @ApiProperty({ example: 'mashey' })
@@ -8,6 +8,7 @@ export class CreateRegoinDto {
 
     @ApiProperty({ example: 'ывавыаы' })
     @IsOptional()
+    @Matches(/^[\u0400-\u04FF\s]+$/)
     @IsString()
     name_ru?: string
 

@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { LevelService } from './level.service';
 import { CreateLevelDto } from './dto/create-level.dto';
 import { UpdateLevelDto } from './dto/update-level.dto';
+import { GetLevelDto } from './dto/get-level.dto';
 
 @Controller('level')
 export class LevelController {
@@ -13,8 +14,8 @@ export class LevelController {
   }
 
   @Get()
-  findAll() {
-    return this.levelService.findAll();
+  findAll(@Query() query: GetLevelDto) {
+    return this.levelService.findAll(query);
   }
 
   @Get(':id')

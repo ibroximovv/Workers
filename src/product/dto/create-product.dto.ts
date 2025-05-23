@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsArray, IsBoolean, IsInt, IsOptional, IsString, IsUUID } from "class-validator";
+import { IsArray, IsBoolean, IsInt, IsOptional, IsString, IsUUID, Matches } from "class-validator";
 import { UUID } from "crypto";
 
 export class CreateProductDto {
@@ -9,6 +9,7 @@ export class CreateProductDto {
 
     @ApiProperty({ example: 'name' })
     @IsOptional()
+    @Matches(/^[\u0400-\u04FF\s]+$/)
     @IsString()
     name_ru?: string
 

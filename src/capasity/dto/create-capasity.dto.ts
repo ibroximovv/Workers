@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString } from "class-validator";
+import { IsString, Matches } from "class-validator";
 
 export class CreateCapasityDto {
     @ApiProperty({ example: '15l' })
@@ -7,6 +7,7 @@ export class CreateCapasityDto {
     name_uz: string
 
     @ApiProperty({ example: '15л' })
+    @Matches(/^[\u0400-\u04FF\s]+$/)
     @IsString()
     name_ru: string
 

@@ -21,9 +21,12 @@ import { BacketModule } from './backet/backet.module';
 import { MasterOrderModule } from './master-order/master-order.module';
 import { CommentModule } from './comment/comment.module';
 import { ContactModule } from './contact/contact.module';
+import { FaqModule } from './faq/faq.module';
+import { ShowcaseModule } from './showcase/showcase.module';
+import { GenerealInfoModule } from './genereal-info/genereal-info.module';
 
 @Module({
-  imports: [RegoinModule, PrismaModule, UserModule, AuthModule, MailModule, BrandModule, CapasityModule, PartnerModule, LevelModule, SizeModule, MasterModule, ProductModule, ToolModule, OrderModule, BacketModule, MasterOrderModule, CommentModule, ContactModule],
+  imports: [RegoinModule, PrismaModule, UserModule, AuthModule, MailModule, BrandModule, CapasityModule, PartnerModule, LevelModule, SizeModule, MasterModule, ProductModule, ToolModule, OrderModule, BacketModule, MasterOrderModule, CommentModule, ContactModule, FaqModule, ShowcaseModule, GenerealInfoModule],
   controllers: [AppController],
   providers: [AppService, SmsService],
 })

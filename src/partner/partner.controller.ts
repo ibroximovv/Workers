@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { PartnerService } from './partner.service';
 import { CreatePartnerDto } from './dto/create-partner.dto';
 import { UpdatePartnerDto } from './dto/update-partner.dto';
+import { GetPartnerDto } from './dto/get-partner.dto';
 
 @Controller('partner')
 export class PartnerController {
@@ -13,8 +14,8 @@ export class PartnerController {
   }
 
   @Get()
-  findAll() {
-    return this.partnerService.findAll();
+  findAll(@Query() query: GetPartnerDto) {
+    return this.partnerService.findAll(query);
   }
 
   @Get(':id')

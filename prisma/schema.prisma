@@ -103,10 +103,10 @@ model Comment {
 
 model GeneralInfo {
   id         String   @id @default(uuid())
-  email      String
-  links      String
-  phones     String
-  telegramId String   @unique
+  email      String?   @unique
+  links      String?   @unique
+  phones     String?   @unique
+  telegramId String?  @unique
   createdAt  DateTime @default(now())
 }
 

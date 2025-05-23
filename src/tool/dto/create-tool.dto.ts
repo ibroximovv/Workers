@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsBoolean, IsInt, IsOptional, IsString, IsUUID } from "class-validator";
+import { IsBoolean, IsInt, IsOptional, IsString, IsUUID, Matches } from "class-validator";
 import { UUID } from "crypto";
 
 export class CreateToolDto {
@@ -10,6 +10,7 @@ export class CreateToolDto {
 
     @ApiProperty({ example: 'name' })
     @IsOptional()
+    @Matches(/^[\u0400-\u04FF\s]+$/)
     @IsString()
     name_ru?: string
 
@@ -24,6 +25,7 @@ export class CreateToolDto {
 
     @ApiProperty({ example: 'description_uz' })
     @IsOptional()
+    @Matches(/^[\u0400-\u04FF\s]+$/)
     @IsString()
     description_ru?: string
 

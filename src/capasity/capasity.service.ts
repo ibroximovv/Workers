@@ -2,6 +2,7 @@ import { BadRequestException, ConflictException, Injectable, InternalServerError
 import { CreateCapasityDto } from './dto/create-capasity.dto';
 import { UpdateCapasityDto } from './dto/update-capasity.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { GetCapasityDto } from './dto/get-capasity.dto';
 
 @Injectable()
 export class CapasityService {
@@ -18,9 +19,40 @@ export class CapasityService {
     }
   }
 
-  async findAll() {
+  async findAll(query: GetCapasityDto) {
+    const { search, skip = 1, take = 10, sortBy = 'name_uz', sortOrder } = query
     try {
-      return await this.prisma.capasity.findMany();
+      return await this.prisma.capasity.findMany({
+        where: {
+          ...(search && {
+            OR: [
+              { 
+                name_en: {
+                  contains: search,
+                  mode: 'insensitive'
+                }
+              },
+              {
+                name_ru: {
+                  contains: search,
+                  mode: 'insensitive'
+                }
+              },
+              {
+                name_en: {
+                  contains: search,
+                  mode: 'insensitive'
+                }
+              }
+            ]
+          })
+        },
+        skip: ( Number(skip) - 1 ) * Number(take),
+        take: Number(take),
+        orderBy: {
+          [sortBy]: sortOrder
+        }
+      });
     } catch (error) {
       if (error instanceof BadRequestException) throw error
       throw new InternalServerErrorException(error.message || 'Internal server error')
