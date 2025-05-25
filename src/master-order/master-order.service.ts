@@ -10,7 +10,7 @@ export class MasterOrderService {
     try {
       const masters = await Promise.all(
         createMasterOrderDto.masterId.map(async masterId => {
-          const findone = await this.prisma.master.findFirst({ where: { id: masterId }})
+          const findone = await this.prisma.master.findFirst({ where: { AND: [{ id: masterId }, { isActive: true }] }})
           return findone
         })
       )
@@ -28,6 +28,7 @@ export class MasterOrderService {
             { masterId: masterId }
           ]}})
           if(findone) throw new BadRequestException('Master-order already exists')
+          await this.prisma.master.update({ where: { id: masterId }, data: { isActive: false }})
           return await this.prisma.masterOrder.create({
             data: {
               masterId: masterId,
@@ -80,10 +81,10 @@ export class MasterOrderService {
           data: { orderId }
         });
       }
-
+  
       if (Array.isArray(masterId) && masterId.length > 0) {
         const masters = await Promise.all(
-          masterId.map(async (mId) => await this.prisma.master.findFirst({ where: { id: mId } }))
+          masterId.map(async (mId) => await this.prisma.master.findFirst({ where: { AND: [{ id: mId }, { isActive: true }] } }))
         );
         const notFound = masters.some(m => m === null);
         if (notFound) throw new BadRequestException('One or more masters not found');
@@ -91,6 +92,23 @@ export class MasterOrderService {
         const currentOrderId = orderId || existingMasterOrder.orderId;
         const findOrder = await this.prisma.order.findFirst({ where: { id: currentOrderId } });
         if (!findOrder) throw new BadRequestException('Order not found');
+  
+        const oldMasterOrders = await this.prisma.masterOrder.findMany({
+          where: { orderId: currentOrderId },
+          select: { masterId: true }
+        });
+  
+        const oldMasterIds = oldMasterOrders.map(mo => mo.masterId);
+  
+        await this.prisma.master.updateMany({
+          where: { id: { in: oldMasterIds } },
+          data: { isActive: true }
+        });
+  
+        await this.prisma.master.updateMany({
+          where: { id: { in: masterId } },
+          data: { isActive: false }
+        });
   
         await this.prisma.masterOrder.deleteMany({ where: { orderId: currentOrderId } });
   
@@ -112,7 +130,7 @@ export class MasterOrderService {
       if (error instanceof BadRequestException) throw error;
       throw new InternalServerErrorException(error.message || 'Internal server error');
     }
-  }
+  }  
 
   async remove(id: string) {
     try {

@@ -2,6 +2,8 @@ import { BadRequestException, ConflictException, Injectable, InternalServerError
 import { CreateMasterDto } from './dto/create-master.dto';
 import { UpdateMasterDto } from './dto/update-master.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { GetMasterDto } from './dto/get-master.dto';
+import { omit } from 'lodash';
 
 @Injectable()
 export class MasterService {
@@ -37,12 +39,100 @@ export class MasterService {
     }
   }
 
-  async findAll() {
+  async findAll(query: GetMasterDto) {
+    const {
+      search,
+      skip = 1,
+      take = 10,
+      isActive = true,
+      levelId,
+      productId,
+      sortBy,
+      sortOrder = 'asc',
+    } = query;
+  
     try {
-      return await this.prisma.master.findMany();
+      const masters = await this.prisma.master.findMany({
+        where: {
+          ...(search && {
+            OR: [
+              { fullName: { contains: search, mode: 'insensitive' } },
+              { phone: { contains: search, mode: 'insensitive' } }
+            ]
+          }),
+          ...(isActive !== undefined ? { isActive }: {}),
+          ...(levelId || productId
+            ? {
+                ProductMaster: {
+                  some: {
+                    ...(productId && { productId }),
+                    ...(levelId && { levelId }),
+                  },
+                },
+              }
+            : {}),
+        },
+        
+        include: {
+          ProductMaster: {
+            select: {
+              id: true,
+              minWorkingHours: true,
+              priceHourly: true,
+              priceDaily: true,
+              experience: true,
+              Product: {
+                select: {
+                  id: true,
+                  name_uz: true,
+                  ProductLevel: {
+                    select: {
+                      id: true,
+                      priceHourly: true,
+                      priceDaily: true,
+                      minWorkingHours: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+          Star: {
+            select: {
+              star: true,
+            },
+          },
+        },
+        skip: (Number(skip) - 1) * Number(take),
+        take: Number(take),
+        orderBy: sortBy
+          ? {
+              [sortBy]: sortOrder,
+            }
+          : undefined,
+      });
+  
+      const modifiedMasters = masters.map((master) => {
+        const averageStar =
+          master.Star.length > 0
+            ? master.Star.reduce((sum, curr) => sum + curr.star, 0) /
+              master.Star.length
+            : null;
+  
+        const cleanMaster = omit(master, ['Star']);
+  
+        return {
+          ...cleanMaster,
+          averageStar,
+        };
+      });
+  
+      return modifiedMasters;
     } catch (error) {
-      if(error instanceof BadRequestException) throw error
-      throw new InternalServerErrorException(error.message || 'Internal server error')
+      if (error instanceof BadRequestException) throw error;
+      throw new InternalServerErrorException(
+        error.message || 'Internal server error',
+      );
     }
   }
 
@@ -72,6 +162,8 @@ export class MasterService {
     try {
       const findone = await this.prisma.master.findFirst({ where: { id }})
       if (!findone) throw new BadRequestException('Master not found')
+      const findmasterorder = await this.prisma.masterOrder.findFirst({ where: { masterId: id }})
+      if(findmasterorder) throw new BadRequestException('this master masterorder relational ')
       return await this.prisma.master.delete({ where: { id }}); // + errorHandling relation db deleted
     } catch (error) {
       if(error instanceof BadRequestException) throw error

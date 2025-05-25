@@ -69,7 +69,7 @@ model Master {
   fullName      String  @unique
   phone         String  @unique
   isActive      Boolean @default(true)
-  year          Int
+  year           Int
   image         String
   passportImage String
   about         String
@@ -103,9 +103,9 @@ model Comment {
 
 model GeneralInfo {
   id         String   @id @default(uuid())
-  email      String?   @unique
-  links      String?   @unique
-  phones     String?   @unique
+  email      String?  @unique
+  links      String?  @unique
+  phones     String?  @unique
   telegramId String?  @unique
   createdAt  DateTime @default(now())
 }
@@ -290,7 +290,6 @@ model Order {
   Comment           Comment[]
   User              User           @relation(fields: [userId], references: [id])
   userId            String
-  Backet            Backet[]
 }
 
 enum PaymentType {
@@ -352,11 +351,11 @@ model MasterOrder {
 }
 
 model Backet {
-  id      String @id @default(uuid())
-  User    User   @relation(fields: [userId], references: [id])
-  userId  String
-  Order   Order  @relation(fields: [orderId], references: [id])
-  orderId String
+  id         String       @id @default(uuid())
+  User       User         @relation(fields: [userId], references: [id])
+  userId     String
+  total      Int
+  BacketItem BacketItem[]
 }
 
 model BacketItem {
@@ -371,4 +370,6 @@ model BacketItem {
   total     Int
   User      User     @relation(fields: [userId], references: [id])
   userId    String
+  Backet    Backet   @relation(fields: [backetId], references: [id])
+  backetId  String
 }

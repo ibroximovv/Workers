@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, InternalServerErrorException } from '@
 import { CreateToolDto } from './dto/create-tool.dto';
 import { UpdateToolDto } from './dto/update-tool.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { GetToolDto } from './dto/get-tool.dto';
 
 @Injectable()
 export class ToolService {
@@ -41,9 +42,83 @@ export class ToolService {
     }
   }
 
-  async findAll() {
+  async findAll(query: GetToolDto) {
+    const { search, skip = 1, take = 10, isActive = true, sortBy, sortOrder = 'asc', sizeId, brandId, capasityId, priceFrom, priceTo} = query
+    let priceFilterField: 'price' | 'quantity' | undefined;
+    if (sortBy === 'price' || sortBy === 'quantity') {
+      priceFilterField = sortBy
+    }
     try {
-      return await this.prisma.tool.findMany();
+      return await this.prisma.tool.findMany({
+        where: {
+          ...(search && {
+            OR: [
+              {
+                name_en: {
+                  contains: search,
+                  mode: 'insensitive'
+                }
+              },
+              {
+                name_uz: {
+                  contains: search,
+                  mode: 'insensitive'
+                }
+              },
+              {
+                name_ru: {
+                  contains: search,
+                  mode: 'insensitive'
+                }
+              },
+              {
+                code: {
+                  contains: search,
+                  mode: 'insensitive'
+                }
+              }
+            ]
+          }),
+          ...(isActive !== undefined ? { isActive }: {}),
+          ...(capasityId && { capasityId }),
+          ...(brandId && { brandId }),
+          ...(sizeId && { sizeId }),
+          ...(priceFilterField && (priceFrom !== undefined || priceTo !== undefined) && {
+            [priceFilterField]: {
+              ...(priceFrom !== undefined && { gte: Number(priceFrom) }),
+              ...(priceTo !== undefined && { lte: Number(priceTo) }),
+            }
+          }),
+        },
+        include: {
+          Brand: {
+            select: {
+              id: true,
+              name_uz: true
+            }
+          },
+          Capacity: {
+            select: {
+              id: true,
+              name_uz: true,
+            }
+          },
+          Size: {
+            select: {
+              id: true,
+              name_uz: true
+            }
+          }
+        },
+        omit: {
+          brandId: true,
+          capasityId: true,
+          sizeId: true
+        },
+        skip: (Number(skip) - 1) * Number(take),
+        take: Number(take),
+        orderBy: sortBy ? { [sortBy]: sortOrder, } : undefined,
+      });
     } catch (error) {
       if(error instanceof BadRequestException) throw error
       throw new InternalServerErrorException(error.message || 'Internal server error')

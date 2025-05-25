@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { SendOtpDto } from './dto/send-otp.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { MailService } from 'src/mail/mail.service';
@@ -46,6 +46,8 @@ export class AuthService {
     try {
       const findone = await this.prisma.user.findFirst({ where: { phone: data.phone }})
       if (findone) throw new BadRequestException('User already exists')
+      const findregion = await this.prisma.region.findFirst({ where: { id: data.regionId }})
+      if(!findregion) throw new BadRequestException('Region not found')
       const hashedPassword = bcrypt.hashSync(data.password, 10)
       return await this.prisma.user.create({ data: { ...data, password: hashedPassword }})
     } catch (error) {
@@ -58,8 +60,10 @@ export class AuthService {
     try {
       const findone = await this.prisma.user.findFirst({ where: { phone: data.phone }})
       if (findone) throw new BadRequestException('User already exists')
+      const findregion = await this.prisma.region.findFirst({ where: { id: data.regionId }})
+      if(!findregion) throw new BadRequestException('Region not found')
       const hashedPassword = bcrypt.hashSync(data.password, 10)
-      return await this.prisma.user.create({ data: { ...data, password: hashedPassword }})
+      return await this.prisma.user.create({ data: { ...data, password: hashedPassword, role: 'USER_YUR' }})
     } catch (error) {
       if (error instanceof BadRequestException) throw error
       throw new InternalServerErrorException(error.message || 'Internal server error')
