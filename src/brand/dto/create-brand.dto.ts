@@ -6,8 +6,8 @@ export class CreateBrandDto {
     @IsString()
     name_uz: string
 
-    @ApiProperty({ example: 'nike' })
-    @Matches(/^[\u0400-\u04FF\s]+$/)
+    @ApiProperty({ example: 'ываавы' })
+    @Matches(/^[\u0400-\u04FF0-9\s]+$/)
     @IsOptional()
     @IsString()
     name_ru?: string

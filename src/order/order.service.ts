@@ -3,6 +3,7 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GetOrderDto } from './dto/get-order.dto';
+import axios from 'axios';
 
 @Injectable()
 export class OrderService {
@@ -88,6 +89,16 @@ export class OrderService {
         }));
       }
 
+      const generalInfo = await this.prisma.generalInfo.findFirst(); 
+      if (generalInfo && generalInfo.telegramId) {
+        const message = `Order created!\n\nID: ${order.id}\nUser ID: ${order.userId}\nTotalPrice: ${totalOrderPrice} so'm`;
+
+        await axios.post('https://api.telegram.org/bot7892941710:AAEFWiFkzTvNBPZfffl0uiJp70EHBnbyKR8/sendMessage', {
+          chat_id: generalInfo.telegramId,
+          text: message
+        });
+      }
+
       return await this.prisma.order.update({
         where: { id: order.id },
         data: { total: totalOrderPrice }
@@ -99,12 +110,11 @@ export class OrderService {
     }
   }  
 
-  async findAll(user: any, query: GetOrderDto) {
+  async findAll( query: GetOrderDto) {
     const { search, skip = 1, take = 10, sortBy, sortOrder = 'asc', productId, levelId, toolId, paymentType, status } = query
     try {
       return await this.prisma.order.findMany({
         where: {
-          userId: user.id,
           NOT: {
             status: 'FINISHED'
           },
@@ -176,7 +186,8 @@ export class OrderService {
                     }
                   }
                 }
-              }
+              }, 
+              total: true
             }
           },
           ToolOrder: {
@@ -187,10 +198,18 @@ export class OrderService {
                   name_uz: true,
                   name_en: true,
                   name_ru: true,
+                  code: true,
                   price: true,
                   isActive: true
                 }
-              }
+              },
+              total: true
+            },
+          },
+          Comment: {
+            select: {
+              id: true,
+              message: true
             }
           }
         },

@@ -7,9 +7,9 @@ export class CreateProductDto {
     @IsString()
     name_uz: string
 
-    @ApiProperty({ example: 'name' })
+    @ApiProperty({ example: 'аыв' })
     @IsOptional()
-    @Matches(/^[\u0400-\u04FF\s]+$/)
+    @Matches(/^[\u0400-\u04FF0-9\s]+$/)
     @IsString()
     name_ru?: string
 
@@ -32,7 +32,7 @@ export class CreateProductDto {
 
     @ApiProperty({
         example: [
-            { levelId: '336b2738-a7b2-4696-964f-a37bbba347b4', priceHourly: 10000, priceDaily: 80000, minWorkingHours: 2 }
+            { levelId: 'd223f2c9-4f3e-4443-8016-f3f397d13a55', priceHourly: 10000, priceDaily: 80000, minWorkingHours: 2 }
         ]
     })
     @IsArray()
@@ -43,7 +43,7 @@ export class CreateProductDto {
         minWorkingHours: number;
     }[];
 
-    @ApiProperty({ type: [String], example: ["32873e32-28ad-4a64-9944-418b37e07306", "32873e32-28ad-4a64-9944-418b37e07306"] })
+    @ApiProperty({ type: [String], example: ["9b8c8064-7db6-47c0-8bf7-7ffedeac4153", "70916968-8219-4d48-b203-844c9f1ee13f"] })
     @IsArray()
     @IsUUID("all", { each: true })
     tools: string[];

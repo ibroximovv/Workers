@@ -7,7 +7,7 @@ export class CreateLevelDto {
     name_uz: string
 
     @ApiProperty({ example: 'nike' })
-    @Matches(/^[\u0400-\u04FF\s]+$/)
+    @Matches(/^[\u0400-\u04FF0-9\s]+$/)
     @IsOptional()
     @IsString()
     name_ru?: string

@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, InternalServerErrorException } from '@
 import { CreateContactDto } from './dto/create-contact.dto';
 import { UpdateContactDto } from './dto/update-contact.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { GetContactDto } from './dto/get-contact.dto';
 
 @Injectable()
 export class ContactService {
@@ -24,9 +25,38 @@ export class ContactService {
     }
   }
 
-  async findAll() {
+  async findAll(query: GetContactDto) {
+    const { search, skip = 1, take = 10, sortBy, sortOrder = 'asc' } = query
     try {
-      return await this.prisma.contact.findMany()
+      return await this.prisma.contact.findMany({
+        where: {
+          ...(search && {
+            OR: [
+              {
+                name: {
+                  contains: search,
+                  mode: 'insensitive'
+                },              
+              }, 
+              {
+                surName: {
+                  contains: search,
+                  mode: 'insensitive'
+                },
+              },
+              {
+                phone: {
+                  contains: search,
+                  mode: 'insensitive'
+                }  
+              }
+            ]
+          })
+        },
+        skip: (Number(skip) - 1) * Number(take),
+        take: Number(take),
+        orderBy: sortBy ? { [sortBy]: sortOrder, } : undefined,
+      })
     } catch (error) {
       if (error instanceof BadRequestException) throw error
       throw new InternalServerErrorException(error.message || 'Internal server error')

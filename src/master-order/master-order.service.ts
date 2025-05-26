@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, InternalServerErrorException } from '@
 import { CreateMasterOrderDto } from './dto/create-master-order.dto';
 import { UpdateMasterOrderDto } from './dto/update-master-order.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { GetMasterOrderDto } from './dto/get-master-order.dto';
 
 @Injectable()
 export class MasterOrderService {
@@ -43,9 +44,57 @@ export class MasterOrderService {
     }
   }
 
-  async findAll() {
+  async findAll(query: GetMasterOrderDto) {
+    const { skip = 1, take = 10, masterId, orderId } = query
     try {
-      return await this.prisma.masterOrder.findMany();
+      return await this.prisma.masterOrder.findMany({
+        where: {
+          ...(masterId && { masterId }),
+          ...(orderId && { orderId }),
+        },
+        include: {
+          Master: {
+            select: {
+              id: true,
+              fullName: true,
+              isActive: true,
+              ProductMaster: {
+                select: {
+                  priceDaily: true,
+                  priceHourly: true,
+                  minWorkingHours: true
+                }
+              }
+            }
+          },
+          Order: {
+            select: {
+              id: true,
+              User: {
+                select: {
+                  id: true,
+                  fullname: true,
+                  phone: true,
+                  role: true,
+                  Region: {
+                    select: {
+                      name_uz: true
+                    }
+                  }
+                }
+              },
+              location: true,
+              address: true,
+              withDelivery: true,
+              paymentType: true,
+              status: true
+            }
+          },
+        },
+        omit: { orderId: true },
+        skip: (Number(skip) - 1) * Number(take),
+        take: Number(take),
+      });
     } catch (error) {
       if (error instanceof BadRequestException) throw error
       throw new InternalServerErrorException(error.message || 'Internal server error')

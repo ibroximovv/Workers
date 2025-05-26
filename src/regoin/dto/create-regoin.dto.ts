@@ -8,7 +8,7 @@ export class CreateRegoinDto {
 
     @ApiProperty({ example: 'ывавыаы' })
     @IsOptional()
-    @Matches(/^[\u0400-\u04FF\s]+$/)
+    @Matches(/^[\u0400-\u04FF0-9\s]+$/)
     @IsString()
     name_ru?: string
 

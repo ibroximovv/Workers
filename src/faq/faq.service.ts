@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, InternalServerErrorException } from '@
 import { CreateFaqDto } from './dto/create-faq.dto';
 import { UpdateFaqDto } from './dto/update-faq.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { GetFaqDto } from './dto/get-faq.dto';
 
 @Injectable()
 export class FaqService {
@@ -22,9 +23,32 @@ export class FaqService {
     }
   }
 
-  async findAll() {
+  async findAll(query: GetFaqDto) {
+    const { search, skip = 1, take = 10, sortBy, sortOrder = 'asc' } = query
     try {
-      return await this.prisma.faq.findMany();
+      return await this.prisma.faq.findMany({
+        where: {
+          ...(search && {
+            OR: [
+              {
+                question: {
+                  contains: search,
+                  mode: 'insensitive'
+                }
+              },
+              {
+                answer: {
+                  contains: search,
+                  mode: 'insensitive'
+                }
+              }
+            ]
+          })
+        },
+        skip: (Number(skip) - 1) * Number(take),
+        take: Number(take),
+        orderBy: sortBy ? { [sortBy]: sortOrder, } : undefined,
+      });
     } catch (error) {
       if (error instanceof BadRequestException) throw error
       throw new InternalServerErrorException(error.message || 'Internal server error')

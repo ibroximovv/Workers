@@ -19,7 +19,7 @@ export class RegisterAuthFz {
     @IsEmail()
     email: string
 
-    @ApiProperty({ example: '5b71d12f-add8-4713-96b5-28b0750ffdf5' })
+    @ApiProperty({ example: 'c126c21d-800f-46a0-ba95-d7069417e52f' })
     @IsUUID()
     regionId: UUID
 }

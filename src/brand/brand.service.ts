@@ -27,7 +27,7 @@ export class BrandService {
           ...(search && {
             OR: [
               { 
-                name_en: {
+                name_uz: {
                   contains: search,
                   mode: 'insensitive'
                 }

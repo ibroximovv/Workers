@@ -6,8 +6,8 @@ import { UUID } from "crypto";
 export class CreateBacketDto {
     @ApiProperty({ 
         example: {
-            productId: '52b4d99d-45f3-48c8-a53d-bf0f375f057a',
-            levelId: '135c5bda-4309-4713-8494-113a923814f0'
+            productId: 'a6f8769a-11eb-4cf4-ad05-644cae78d01a',
+            levelId: 'd223f2c9-4f3e-4443-8016-f3f397d13a55'
         },
         required: false
     })
@@ -18,7 +18,7 @@ export class CreateBacketDto {
         levelId: UUID
     };
 
-    @ApiProperty({ example: '32873e32-28ad-4a64-9944-418b37e07306', required: false })
+    @ApiProperty({ example: '9b8c8064-7db6-47c0-8bf7-7ffedeac4153', required: false })
     @IsOptional()
     @IsUUID()
     toolId?: string;

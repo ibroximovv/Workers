@@ -7,7 +7,7 @@ export class CreateCapasityDto {
     name_uz: string
 
     @ApiProperty({ example: '15л' })
-    @Matches(/^[\u0400-\u04FF\s]+$/)
+    @Matches(/^[\u0400-\u04FF0-9\s]+$/)
     @IsString()
     name_ru: string
 

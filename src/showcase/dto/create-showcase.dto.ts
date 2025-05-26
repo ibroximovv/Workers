@@ -8,7 +8,7 @@ export class CreateShowcaseDto {
 
     @ApiProperty({ example: 'nike' })
     @IsOptional()
-    @Matches(/^[\u0400-\u04FF\s]+$/)
+    @Matches(/^[\u0400-\u04FF0-9\s]+$/)
     @IsString()
     name_ru?: string
 
@@ -23,7 +23,7 @@ export class CreateShowcaseDto {
 
     @ApiProperty({ example: 'description_uz' })
     @IsOptional()
-    @Matches(/^[\u0400-\u04FF\s]+$/)
+    @Matches(/^[\u0400-\u04FF0-9\s]+$/)
     @IsString()
     description_ru?: string
 

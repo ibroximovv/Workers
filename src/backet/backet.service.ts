@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, InternalServerErrorException } from '@
 import { CreateBacketDto } from './dto/create-backet.dto';
 import { UpdateBacketDto } from './dto/update-backet.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { GetBacketDto } from './dto/get-backet.dto';
 
 @Injectable()
 export class BacketService {
@@ -124,9 +125,75 @@ export class BacketService {
     }
   }
   
-  async findAll(user: any) {
+  async findAll(user: any, query: GetBacketDto) {
+    const { skip = 1, take = 10, sortOrder = 'asc', sortBy, levelId, productId, toolId } = query
     try {
-      return await this.prisma.backet.findMany({ where: { userId: user.id}});
+      return await this.prisma.backet.findMany({
+        where: { 
+          userId: user.id,
+          ...(productId || levelId || toolId ? {
+            BacketItem: {
+              some: {
+                ...(productId && { productId }),
+                ...(levelId && { levelId }),
+                ...(toolId && { toolId })
+              }
+            }
+          }: {}),
+        },
+        include: {
+          BacketItem: {
+            select: {
+              Product: {
+                select: {
+                  id: true,
+                  name_uz: true,
+                  name_en: true,
+                  name_ru: true,
+                  isActive: true
+                }
+              },
+              Level: {
+                select: {
+                  id: true,
+                  ProductLevel: {
+                    select: {
+                      priceDaily: true,
+                      priceHourly: true
+                    }
+                  },
+                }
+              },
+              Tool: {
+                select: {
+                  id: true,
+                  price: true,
+                  quantity: true,
+                  Size: {
+                    select: {
+                      name_uz: true,
+                    }
+                  },
+                  Brand: {
+                    select: {
+                      name_uz: true,
+                    }
+                  },
+                  Capacity: {
+                    select: {
+                      name_uz: true
+                    }
+                  }
+                }
+              },
+              total: true,
+            }
+          },
+        },
+        skip: (Number(skip) - 1) * Number(take),
+        take: Number(take),
+        orderBy: sortBy ? { [sortBy]: sortOrder, } : undefined,
+      });
     } catch (error) {
       if (error instanceof BadRequestException) throw error
       throw new InternalServerErrorException(error.message || 'Internal server error')

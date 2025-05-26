@@ -8,9 +8,9 @@ export class CreateToolDto {
     @IsString()
     name_uz: string
 
-    @ApiProperty({ example: 'name' })
+    @ApiProperty({ example: 'ыдфлифы' })
     @IsOptional()
-    @Matches(/^[\u0400-\u04FF\s]+$/)
+    @Matches(/^[\u0400-\u04FF0-9\s]+$/)
     @IsString()
     name_ru?: string
 
@@ -23,9 +23,9 @@ export class CreateToolDto {
     @IsString()
     description_uz: string
 
-    @ApiProperty({ example: 'description_uz' })
+    @ApiProperty({ example: 'рыдывлгфп' })
     @IsOptional()
-    @Matches(/^[\u0400-\u04FF\s]+$/)
+    @Matches(/^[\u0400-\u04FF0-9\s]+$/)
     @IsString()
     description_ru?: string
 
@@ -34,7 +34,7 @@ export class CreateToolDto {
     @IsString()
     description_en?: string
 
-    @ApiProperty({ example: 213124 })
+    @ApiProperty({ example: 10000 })
     @IsInt()
     @Type(() => Number)
     price: number
@@ -52,16 +52,16 @@ export class CreateToolDto {
     @IsBoolean()
     isActive: boolean
     
-    @ApiProperty({ example: 'd21098b4-b6d5-48fc-a8e3-9006e9be2d55'})
+    @ApiProperty({ example: 'c3011b2c-32bd-4e8d-9b86-9d5c2b7fd021'})
     @IsUUID()
     brandId: UUID
 
-    @ApiProperty({ example: '17bf7259-a778-44be-8a4d-9e0942de7157'})
+    @ApiProperty({ example: '1d2ec1aa-3326-45a2-86b6-c35381aeea86'})
     @IsOptional()
     @IsUUID()
     capasityId?: UUID
     
-    @ApiProperty({ example: 'bc3c3e71-1fc2-4b4d-a34b-e4ee7aa18054'})
+    @ApiProperty({ example: 'b674826c-bf24-4c89-abdf-23f4312a92ec'})
     @IsOptional()
     @IsUUID()
     sizeId?: UUID

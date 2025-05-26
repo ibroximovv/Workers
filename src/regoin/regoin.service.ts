@@ -34,7 +34,7 @@ export class RegoinService {
           ...(search && {
             OR: [
               { 
-                name_en: {
+                name_uz: {
                   contains: search,
                   mode: 'insensitive'
                 }

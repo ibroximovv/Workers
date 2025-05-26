@@ -2,6 +2,7 @@ import { BadRequestException, ConflictException, Injectable, InternalServerError
 import { CreateShowcaseDto } from './dto/create-showcase.dto';
 import { UpdateShowcaseDto } from './dto/update-showcase.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { GetShowcaseDto } from './dto/get-showcase.dto';
 
 @Injectable()
 export class ShowcaseService {
@@ -21,9 +22,38 @@ export class ShowcaseService {
     }
   }
 
-  async findAll() {
+  async findAll(query: GetShowcaseDto) {
+    const { search, skip = 1, take = 10, sortBy, sortOrder = 'asc' } = query
     try {
-      return await this.prisma.showcase.findMany();
+      return await this.prisma.showcase.findMany({
+        where: {
+          ...(search && {
+            OR: [
+              {
+                name_en: {
+                  contains: search,
+                  mode: 'insensitive'
+                },
+              },
+              {
+                name_uz: {
+                  contains: search,
+                  mode: 'insensitive'
+                },
+              },
+              {
+                name_ru: {
+                  contains: search,
+                  mode: 'insensitive'
+                },
+              },
+            ]
+          })
+        },
+        skip: (Number(skip) - 1) * Number(take),
+        take: Number(take),
+        orderBy: sortBy ? { [sortBy]: sortOrder, } : undefined,
+      });
     } catch (error) {
       if (error instanceof BadRequestException) throw error
       throw new InternalServerErrorException(error.message || 'Internal server error')

@@ -27,7 +27,7 @@ export class CapasityService {
           ...(search && {
             OR: [
               { 
-                name_en: {
+                name_uz: {
                   contains: search,
                   mode: 'insensitive'
                 }

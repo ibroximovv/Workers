@@ -34,8 +34,8 @@ export class CreateMasterDto {
 
     @ApiProperty({ example: [
         {
-            productId: '7db7cbaa-0145-4acb-ba3e-1acaeaed1c76',
-            levelId: '336b2738-a7b2-4696-964f-a37bbba347b4',
+            productId: 'a6f8769a-11eb-4cf4-ad05-644cae78d01a',
+            levelId: 'd223f2c9-4f3e-4443-8016-f3f397d13a55',
             minWorkingHours: 1,
             priceHourly: 10000,
             priceDaily: 100000,

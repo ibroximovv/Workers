@@ -2,6 +2,7 @@ import { BadRequestException, ConflictException, Injectable, InternalServerError
 import { CreateGenerealInfoDto } from './dto/create-genereal-info.dto';
 import { UpdateGenerealInfoDto } from './dto/update-genereal-info.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { GetGeneralInfoDto } from './dto/get-general-info.dto';
 
 @Injectable()
 export class GenerealInfoService {
@@ -18,9 +19,38 @@ export class GenerealInfoService {
     }
   }
   
-  async findAll() {
+  async findAll(query: GetGeneralInfoDto) {
+    const { search, skip = 1, take = 10, sortBy, sortOrder = 'asc' } = query
     try {
-      return await this.prisma.generalInfo.findMany();
+      return await this.prisma.generalInfo.findMany({
+        where: {
+          ...(search && {
+            OR: [
+              {
+                email: {
+                  contains: search,
+                  mode: 'insensitive'
+                }
+              },
+              {
+                phones: {
+                  contains: search,
+                  mode: 'insensitive'
+                }
+              },
+              {
+                telegramId: {
+                  contains: search,
+                  mode: 'insensitive'
+                }
+              },
+            ]
+          })
+        },
+        skip: (Number(skip) - 1) * Number(take),
+        take: Number(take),
+        orderBy: sortBy ? { [sortBy]: sortOrder, } : undefined,
+      });
     } catch (error) {
       if (error instanceof BadRequestException) throw error
       throw new InternalServerErrorException(error.message || 'Internal server error')

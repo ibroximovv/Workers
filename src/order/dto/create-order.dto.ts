@@ -51,8 +51,8 @@ export class CreateOrderDto {
 
     @ApiProperty({ example: [
         {
-            productId: '7db7cbaa-0145-4acb-ba3e-1acaeaed1c76',
-            levelId: '336b2738-a7b2-4696-964f-a37bbba347b4',
+            productId: 'a6f8769a-11eb-4cf4-ad05-644cae78d01a',
+            levelId: 'd223f2c9-4f3e-4443-8016-f3f397d13a55',
             count: 1,
             measure: 'HOUR',
             quantity: 2,
@@ -69,7 +69,7 @@ export class CreateOrderDto {
 
     @ApiProperty({ example: [
         { 
-            toolId: '32873e32-28ad-4a64-9944-418b37e07306',
+            toolId: '9b8c8064-7db6-47c0-8bf7-7ffedeac4153',
             count: 2
         }
     ]})

@@ -1,5 +1,5 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import axios from 'axios';
+import axios from "axios";
 
 @Injectable()
 export class SmsService {
@@ -7,6 +7,8 @@ export class SmsService {
     private readonly email = 'ilyosbekibrohimov22@gmail.com'
     private readonly password = 'Qn1RQYVUbG5NhJKS1d8aVWsWnZeu7pI5gpd7uyPn'
     private token: string | null = '';
+
+    constructor(){}
 
     async authenticate() {
         try {

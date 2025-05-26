@@ -3,7 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { RegoinModule } from './regoin/regoin.module';
 import { PrismaModule } from './prisma/prisma.module';
-import { UserModule } from './user/user.module';
+import { AdminModule } from './admin/admin.module';
 import { AuthModule } from './auth/auth.module';
 import { MailModule } from './mail/mail.module';
 import { SmsService } from './sms/sms.service';
@@ -24,10 +24,15 @@ import { ContactModule } from './contact/contact.module';
 import { FaqModule } from './faq/faq.module';
 import { ShowcaseModule } from './showcase/showcase.module';
 import { GenerealInfoModule } from './genereal-info/genereal-info.module';
+import { MulterController } from './multer/multer.controller';
+import { SessionModule } from './session/session.module';
+import { MyProfileModule } from './my-profile/my-profile.module';
+import { CacheModule } from '@nestjs/cache-manager';
+// import { TelegramModule } from './telegram/telegram.module';
 
 @Module({
-  imports: [RegoinModule, PrismaModule, UserModule, AuthModule, MailModule, BrandModule, CapasityModule, PartnerModule, LevelModule, SizeModule, MasterModule, ProductModule, ToolModule, OrderModule, BacketModule, MasterOrderModule, CommentModule, ContactModule, FaqModule, ShowcaseModule, GenerealInfoModule],
-  controllers: [AppController],
+  imports: [RegoinModule, PrismaModule, AdminModule, AuthModule, MailModule, BrandModule, CapasityModule, PartnerModule, LevelModule, SizeModule, MasterModule, ProductModule, ToolModule, OrderModule, BacketModule, MasterOrderModule, CommentModule, ContactModule, FaqModule, ShowcaseModule, GenerealInfoModule, SessionModule, MyProfileModule, CacheModule.register({ isGlobal: true })],
+  controllers: [AppController, MulterController],
   providers: [AppService, SmsService],
 })
 export class AppModule {}
