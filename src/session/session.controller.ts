@@ -20,7 +20,7 @@ export class SessionController {
   @Get('sessions')
   @UseGuards(AuthorizationGuard, SessionGuard) 
   async getUserSessions(@Req() req: Request) {
-    const sessions = await this.sessionService.getUserSessions(req['user-id']);
+    const sessions = await this.sessionService.getUserSessions(req['user'].id);
     return sessions;
   }
 }

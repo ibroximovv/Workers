@@ -72,7 +72,7 @@ export class AuthService {
 
   async login(loginAuthDto: LoginAuthDto, req: Request) {
     try {
-      const findone = await this.prisma.user.findFirst({ where: { fullname: loginAuthDto.fullname }})
+      const findone = await this.prisma.user.findFirst({ where: { email: loginAuthDto.email }})
       if (!findone) throw new BadRequestException('User not found')
       const matchPassword = bcrypt.compareSync(loginAuthDto.password, findone.password)
       if (!matchPassword) throw new BadRequestException('Login or password not provided')

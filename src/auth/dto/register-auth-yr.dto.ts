@@ -43,7 +43,6 @@ export class RegisterAuthYr {
     @IsString()
     rc: string
 
-
     @ApiProperty({ example: 'sadsfassdanfdslfkjdf' })
     @IsString()
     address: string

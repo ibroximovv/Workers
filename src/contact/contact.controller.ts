@@ -14,10 +14,6 @@ import { AuthorizationGuard } from 'src/authorization/authorization.guard';
 export class ContactController {
   constructor(private readonly contactService: ContactService) {}
 
-  @RolesDecorator(UserRole.ADMIN, UserRole.SUPER_ADMIN)
-  @UseGuards(RolesGuard)
-  @UseGuards(SessionGuard)
-  @UseGuards(AuthorizationGuard)
   @Post()
   create(@Body() createContactDto: CreateContactDto) {
     return this.contactService.create(createContactDto);
