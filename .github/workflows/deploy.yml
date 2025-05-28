@@ -23,11 +23,12 @@ jobs:
 
       - name: Generate Prisma Client
         run: npx prisma generate
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Build project
         run: npm run build
+
+      - name: Create .env file from GitHub Secret
+        run: echo "${{ secrets.ENV_FILE }}" > .env
 
       - name: Deploy files to AWS Lightsail
         uses: appleboy/scp-action@v0.1.6
@@ -36,10 +37,8 @@ jobs:
           username: ${{ secrets.LIGHTSAIL_USER }}
           key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
           port: 22
-          source: |
-            dist/* package.json ecosystem.config.js prisma/schema.prisma
-            node_modules/.prisma .env
-          target: /home/ubuntu/nestjs-app
+          source: 'dist/*,package.json,prisma,.env,ecosystem.config.js'
+          target: '/home/ubuntu/nestjs-app'
 
       - name: Restart App on Lightsail via SSH
         uses: appleboy/ssh-action@v1.0.0
@@ -49,6 +48,7 @@ jobs:
           key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
           script: |
             cd /home/ubuntu/nestjs-app
-            /usr/bin/npm install --omit=dev
+            npm install --omit=dev
             npx prisma generate
-            /usr/bin/pm2 restart ecosystem.config.js || /usr/bin/pm2 start ecosystem.config.js
+            npx prisma migrate deploy
+            pm2 restart ecosystem.config.js || pm2 start ecosystem.config.js
