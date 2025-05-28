@@ -1,4 +1,4 @@
-name: CI/CD to AWS Lightsail
+name: CI/CD to AWS EC2
 
 on:
   push:
@@ -24,17 +24,17 @@ jobs:
       - name: Generate Prisma Client
         run: npx prisma generate
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}  # Neon PostgreSQL URL
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Build project
         run: npm run build
 
-      - name: Deploy files to AWS Lightsail
+      - name: Deploy files to AWS EC2
         uses: appleboy/scp-action@v0.1.6
         with:
-          host: ${{ secrets.LIGHTSAIL_HOST }}
-          username: ${{ secrets.LIGHTSAIL_USER }}
-          key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           source: |
             dist/*
@@ -45,12 +45,12 @@ jobs:
             .env
           target: '/home/ubuntu/nestjs-app'
 
-      - name: Restart App on Lightsail via SSH
+      - name: Restart App on EC2 via SSH
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: ${{ secrets.LIGHTSAIL_HOST }}
-          username: ${{ secrets.LIGHTSAIL_USER }}
-          key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd /home/ubuntu/nestjs-app
             /usr/bin/npm install --omit=dev
