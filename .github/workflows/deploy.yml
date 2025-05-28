@@ -24,7 +24,7 @@ jobs:
       - name: Generate Prisma Client
         run: npx prisma generate
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}  # Neon PostgreSQL URL
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Build project
         run: npm run build
@@ -37,13 +37,9 @@ jobs:
           key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
           port: 22
           source: |
-            dist/*
-            package.json
-            ecosystem.config.js
-            node_modules/.prisma
-            prisma/schema.prisma
-            .env
-          target: '/home/ubuntu/nestjs-app'
+            dist/* package.json ecosystem.config.js prisma/schema.prisma
+            node_modules/.prisma .env
+          target: /home/ubuntu/nestjs-app
 
       - name: Restart App on Lightsail via SSH
         uses: appleboy/ssh-action@v1.0.0
